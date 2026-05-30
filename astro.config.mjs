@@ -4,6 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://Just-Tamizha.github.io',
+	base: '/aras-forum-astro-starlight',
 	integrations: [
 		starlight({
 			title: 'Tamizha',
