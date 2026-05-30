@@ -1,11 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-
-// https://astro.build/config
+const isLive = process.env.isLive == 'true' ? true : false;
+const site = isLive && import.meta.env.PROD ? 'https://aras.pingtamizha.com' : 'https://Just-Tamizha.github.io/';
+const base = isLive ? '/' : '/aras-forum-astro-starlight/';
+console.log('isLive:', isLive);
 export default defineConfig({
-	site: 'https://Just-Tamizha.github.io',
-	base: '/aras-forum-astro-starlight',
+	site, base,
 	integrations: [
 		starlight({
 			title: 'Tamizha',
@@ -25,4 +26,5 @@ export default defineConfig({
 			],
 		}),
 	],
+	server: { port: 3000 },
 });
