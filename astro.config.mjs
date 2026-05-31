@@ -7,15 +7,8 @@ const base = isLive ? '/' : '/aras-forum-astro-starlight/';
 console.log('isLive:', isLive);
 const deployTarget = process.env.DEPLOY_TARGET || 'github';
 export default defineConfig({
-	site:
-    deployTarget === 'github'
-      ? 'https://Just-Tamizha.github.io'
-      : 'https://aras.pingtamizha.com',
-
-  base:
-    deployTarget === 'github'
-      ? '/aras-project'
-      : '/',
+	site: deployTarget === 'github' ? 'https://Just-Tamizha.github.io' : 'https://aras.pingtamizha.com',
+	base: deployTarget === 'github' ? '/aras-forum-astro-starlight' : '/',
 	integrations: [
 		starlight({
 			title: 'Tamizha',
