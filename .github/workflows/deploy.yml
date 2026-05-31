@@ -1,50 +1,85 @@
-name: Deploy Astro Site
+name: Aras Forum
+
 on:
   push:
     branches:
       - main
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 jobs:
-  github-pages:
+  # -----------------------------------------------------------------
+  # JOB 1: Build Artifacts for GitHub Pages
+  # -----------------------------------------------------------------
+  build-github-pages:
+    name: Build for GitHub Pages
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - run: npm ci
-      - name: Build for GitHub Pages
+          node-version: 24
+          cache: 'npm' # Speeds up workflow by caching dependencies
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Compile Astro Project (Staging/Pages)
         run: npm run build
         env:
           DEPLOY_TARGET: github
-      - uses: actions/upload-pages-artifact@v4
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
-  deploy-pages:
-    needs: github-pages
+
+  # -----------------------------------------------------------------
+  # JOB 2: Deploy to GitHub Pages Environment
+  # -----------------------------------------------------------------
+  deploy-github-pages:
+    name: Deploy to GitHub Pages
+    needs: build-github-pages
     runs-on: ubuntu-latest
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # Dynamically links the deployment in GitHub UI
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Publish to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-  ftp-deploy:
+
+  # -----------------------------------------------------------------
+  # JOB 3: Build and Deploy to Production FTP
+  # -----------------------------------------------------------------
+  deploy-production-ftp:
+    name: Deploy to Production via FTP
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - run: npm ci
-      - name: Build for Production
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Compile Astro Project (Production)
         run: npm run build
         env:
           DEPLOY_TARGET: production
-      - name: FTP Deploy
+
+      - name: Upload Files to FTP Server
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
