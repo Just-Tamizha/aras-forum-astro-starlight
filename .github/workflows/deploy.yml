@@ -62,8 +62,10 @@ jobs:
   # -----------------------------------------------------------------
   deploy-production-ftp:
     name: Deploy to Production via FTP
-    url: https://aras.pingtamizha.com
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://aras.pingtamizha.com
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v6
